@@ -1,0 +1,18 @@
+bt_navigator:
+  ros__parameters:
+    use_sim_time: true
+    global_frame: map
+    robot_base_frame: base_link
+    odom_topic: odom
+    bt_loop_duration: 10
+    default_server_timeout: 20
+    
+    # ĐÂY LÀ 2 DÒNG QUAN TRỌNG NHẤT DÀNH CHO ROS 2 HUMBLE
+    default_nav_to_pose_bt_xml: "/home/nhom3/delivery_robot_ws/src/delivery_robot_navigation/nav_to_pose_bt.xml"
+    default_nav_through_poses_bt_xml: "/home/nhom3/delivery_robot_ws/src/delivery_robot_navigation/nav_to_pose_bt.xml"
+    
+    plugin_lib_names:
+      - nav2_compute_path_to_pose_action_bt_node
+      - nav2_follow_path_action_bt_node
+      - nav2_pipeline_sequence_bt_node
+      - nav2_rate_controller_bt_node

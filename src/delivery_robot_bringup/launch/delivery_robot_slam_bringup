@@ -1,0 +1,36 @@
+from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+import os
+from ament_index_python.packages import get_package_share_directory
+
+def generate_launch_description():
+    # 1. Đường dẫn đến các file launch của các package khác
+    robot_controller_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('delivery_robot_controller'), 
+                         'launch', 'delivery_control_launch.py')
+        ])
+    )
+    
+    robot_description_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('delivery_robot_description'), 
+                         'launch', 'display.launch.py')
+        ])
+    )
+
+    robot_slam_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('delivery_robot_slam'), 
+                         'launch', 'cartographer.launch.py')
+        ])
+    )
+
+
+    # 2. Tổng hợp các file launch vào một mô tả duy nhất
+    return LaunchDescription([
+        robot_description_launch,
+        robot_slam_launch,
+        robot_controller_launch,
+    ])

@@ -1,0 +1,85 @@
+from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription, TimerAction
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import Node
+import os
+from ament_index_python.packages import get_package_share_directory
+
+def generate_launch_description():
+    
+    # 1. Khởi chạy phần cứng và định vị (Giữ nguyên)
+    robot_description_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('delivery_robot_description'), 'launch', 'display.launch.py')
+        ])
+    )
+
+    # robot_controller_launch = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource([
+    #         os.path.join(get_package_share_directory('delivery_robot_controller'), 'launch', 'delivery_control_launch.py')
+    #     ])
+    # )
+    
+    robot_localization_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('delivery_robot_slam'), 'launch', 'localization_launch.py')
+        ])
+    )
+
+    # 2. Khởi chạy các thành phần đơn lẻ của Nav2
+    robot_global_planner_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('delivery_robot_navigation'), 'launch', 'global_planner.launch.py')
+        ])
+    )
+    robot_local_planner_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('delivery_robot_navigation'), 'launch', 'local_planner.launch.py')
+        ])
+    )
+    robot_bt_navigator_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('delivery_robot_navigation'), 'launch', 'bt_navigator.launch.py')
+        ])
+    )
+
+    # 3. ĐÂY LÀ CHÌA KHÓA: Một Lifecycle Manager duy nhất điều khiển tất cả
+    # (Lưu ý: Tên trong danh sách `node_names` phải trùng khớp chính xác với `node_name` bạn đặt trong các file launch nhỏ)
+    nav2_lifecycle_manager = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager_navigation',
+        output='screen',
+        parameters=[{
+            'use_sim_time': False, # Đổi thành True nếu bạn chạy mô phỏng Gazebo
+            'autostart': True,
+            'node_names': [
+                'planner_server',    # Khởi động và cấu hình Planner trước
+                'controller_server', # Đến lượt Local Planner
+                'bt_navigator'       # Cuối cùng mới bật bộ điều khiển hành vi
+            ]
+        }]
+    )
+    localization_group = TimerAction(
+        period=2.0,
+        actions=[
+           robot_localization_launch
+        ]
+    )
+    navigation_group = TimerAction(
+        period=5.0,
+        actions=[
+            robot_global_planner_launch,
+            robot_local_planner_launch,
+            robot_bt_navigator_launch,
+            nav2_lifecycle_manager 
+        ]
+    )
+
+    return LaunchDescription([
+        robot_description_launch,
+        # robot_controller_launch,
+        # robot_localization_launch,
+        localization_group,
+        navigation_group
+    ])

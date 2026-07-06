@@ -1,0 +1,17 @@
+```text
+# Các thư mục sinh ra khi build dự án
+/build/
+/devel/
+/install/
+/log/
+/logs/
+
+# Các file tạm của VS Code hoặc hệ điều hành
+.vscode/
+.DS_Store
+*.pyc
+__pycache__/
+
+# Các file cấu hình cá nhân hoặc biến môi trường
+.env
+

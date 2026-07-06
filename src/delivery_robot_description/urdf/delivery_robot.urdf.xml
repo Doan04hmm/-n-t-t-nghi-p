@@ -1,0 +1,131 @@
+<robot name ="delivery_robot" >
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="-0.2595 0.258 0.0825" rpy="1.5708 0 0"/>
+      <geometry>
+        <mesh filename="package://delivery_robot_description/meshes/delivery.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0.2 0.2 0.8 1" />
+      </material>
+    </visual>
+
+    <inertial>
+      <mass value="8"/>
+      <inertia ixx="1e-3" ixy="0" ixz="0" iyy="1e-3" iyz="0" izz="1e-3" />
+      <origin/>
+    </inertial>
+
+    <collision>
+      <origin xyz="-0.2595 0.258 0.0825" rpy="1.5708 0 0"/>
+      <geometry>
+        <box size="0.519 0.516 1.280" />
+      </geometry>
+      <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
+    </collision>
+  </link>
+  <link name="wheel_right">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="1e-3" ixy="0" ixz="0" iyy="1e-3" iyz="0" izz="1e-3" />
+      <origin/>
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.0825" length="0.05" />
+      </geometry>
+      <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.0825" length="0.05" />
+      </geometry>
+      <contact_coefficients mu="0.3" kp="1000.0" kd="1.0"/>
+    </collision>
+  </link>
+    <joint name="wheel_right_joint" type="continuous">
+        <origin xyz="-0.10 -0.22 0.0825" />
+        <parent link="base_link"/>
+        <child link="wheel_right"/>
+        <axis xyz="0 1 0" />
+    </joint>
+  <link name="wheel_left">
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="1e-3" ixy="0" ixz="0" iyy="1e-3" iyz="0" izz="1e-3" />
+      <origin/>
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.0825" length="0.05" />
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.0825" length="0.05" />
+      </geometry>
+      <contact_coefficients mu="0.3" kp="1000.0" kd="1.0"/>
+    </collision>
+  </link>
+    <joint name="wheel_left_joint" type="continuous">
+        <origin xyz="-0.1 0.22 0.0825" />
+        <parent link="base_link"/>
+        <child link="wheel_left"/>
+        <axis xyz="0 1 0" />
+    </joint>  
+    <link name="laser_frame">
+
+  <visual>
+
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+
+    <geometry>
+      <cylinder 
+        radius="0.05"
+        length="0.04"/>
+    </geometry>
+
+    <material name="black">
+      <color rgba="0 0 0 1"/>
+    </material>
+
+  </visual>
+
+
+  <collision>
+
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+
+    <geometry>
+      <cylinder 
+        radius="0.05"
+        length="0.04"/>
+    </geometry>
+
+  </collision>
+
+
+</link>
+
+<joint name="lidar_joint" type="fixed">
+  <parent link="base_link"/> 
+  <child link="laser_frame"/>
+  <origin xyz="-0.1995 0 1.28" rpy="0 0 3.14159"/> 
+  </joint>  
+</robot>
+
+
