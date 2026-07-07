@@ -265,3 +265,268 @@ Repository này bao gồm tài liệu và mã nguồn phục vụ cho các nội
 - Triển khai SLAM bằng Cartographer
 - Triển khai điều hướng robot bằng Nav2
 - Hỗ trợ tích hợp điều khiển AI cho delivery robot
+
+  # Hướng dẫn sử dụng Delivery Robot (ROS 2)
+
+## Tổng hợp câu lệnh
+
+```bash
+# (1) Hiển thị mô hình robot
+ros2 launch delivery_robot_description display.launch.py
+
+# (2) Chạy SLAM Cartographer
+ros2 launch delivery_robot_bringup delivery_robot_slam_bringup
+
+# (3) Chạy Navigation2
+ros2 launch delivery_robot_navigation nav2_bringup.launch.py
+
+# (4) Localization
+ros2 launch delivery_robot_slam localization_launch.py
+
+# (5) Khởi động Navigation Bringup
+ros2 launch delivery_robot_bringup delivery_robot_nav_bringup
+
+# (6) Kết nối bộ điều khiển robot
+ros2 launch delivery_robot_controller delivery_control_launch.py
+
+# (7) Lưu bản đồ Cartographer
+ros2 service call /write_state cartographer_ros_msgs/srv/WriteState \
+"{filename: '/home/nhom3/delivery_robot_ws/src/delivery_robot_navigation/maps/map_final.pbstream'}"
+
+# (8) Chạy chương trình điều khiển AI
+ros2 run delivery_robot_ai dieu_khien.py
+
+# (9) Giao diện khuôn mặt robot
+ros2 run delivery_robot_ai robot_face_node.py
+```
+
+> **Lưu ý:** Chạy lệnh **(9)** nếu muốn hiển thị giao diện khuôn mặt của robot.
+
+---
+
+# 1. Chạy Navigation
+
+## Bước 1: Chọn bản đồ
+
+Mở file:
+
+```text
+/home/delivery_robot_ws/src/delivery_robot_slam/launch/localization_launch.py
+```
+
+Tìm dòng chứa:
+
+```python
+map_lab.pbstream
+```
+
+Đổi thành:
+
+```python
+map_hl.pbstream
+```
+
+Lưu file, sau đó mở Terminal mới và build lại:
+
+```bash
+cd ~/delivery_robot_ws
+colcon build
+```
+
+---
+
+## Bước 2
+
+Mở Terminal mới:
+
+```bash
+cd ~/delivery_robot_ws
+```
+
+---
+
+## Bước 3
+
+Chạy lệnh **(6)**:
+
+```bash
+ros2 launch delivery_robot_controller delivery_control_launch.py
+```
+
+Kiểm tra Terminal:
+
+- Đã kết nối **động cơ**
+- Đã kết nối **LiDAR**
+
+Nếu lỗi:
+
+1. Nhấn **Ctrl + C**
+2. Rút dây LiDAR
+3. Cắm lại
+4. Chạy lại lệnh.
+
+---
+
+## Bước 4
+
+Mở Terminal mới và chạy:
+
+```bash
+ros2 launch delivery_robot_bringup delivery_robot_nav_bringup
+```
+
+**Lưu ý**
+
+- Không đứng chắn trước LiDAR trong lúc khởi động.
+
+---
+
+## Bước 5
+
+Mở Terminal mới:
+
+```bash
+ros2 run delivery_robot_ai dieu_khien.py
+```
+
+---
+
+## Bước 6
+
+Sử dụng điện thoại để gửi lệnh điều khiển robot.
+
+---
+
+### Dừng chương trình
+
+Nhấn:
+
+```text
+Ctrl + C
+```
+
+---
+
+# 2. Lấy tọa độ và gán vào chương trình điều khiển
+
+## Bước 1
+
+```bash
+cd ~/delivery_robot_ws
+```
+
+---
+
+## Bước 2
+
+Chạy:
+
+```bash
+ros2 launch delivery_robot_controller delivery_control_launch.py
+```
+
+Kiểm tra đã kết nối:
+
+- Động cơ
+- LiDAR
+
+Nếu lỗi:
+
+- Ctrl + C
+- Rút và cắm lại LiDAR
+- Chạy lại.
+
+---
+
+## Bước 3
+
+Chạy:
+
+```bash
+ros2 launch delivery_robot_bringup delivery_robot_nav_bringup
+```
+
+Không đứng chắn trước LiDAR.
+
+---
+
+## Bước 4
+
+Trong RViz:
+
+- Chọn **2D Goal Pose**
+- Chọn một điểm trên bản đồ
+- Kéo theo hướng robot muốn quay.
+
+---
+
+## Bước 5
+
+Mở Terminal mới để đọc tọa độ vừa chọn.
+
+> *(Chạy node hoặc lệnh đang dùng để hiển thị Goal Pose.)*
+
+---
+
+## Bước 6
+
+Mở file:
+
+```text
+/home/delivery_robot_ws/src/delivery_robot_ai/src/dieukhien.py
+```
+
+Tìm các tọa độ:
+
+- A
+- B
+- C
+
+Thay bằng tọa độ mới.
+
+Sau đó:
+
+```bash
+cd ~/delivery_robot_ws
+colcon build
+```
+
+Build lại workspace.
+
+---
+
+
+# 3. Chạy SLAM Cartographer
+
+## Bước 1
+
+```bash
+cd ~/delivery_robot_ws
+```
+
+---
+
+## Bước 2
+
+Chạy:
+
+```bash
+ros2 launch delivery_robot_bringup delivery_robot_slam_bringup
+```
+
+---
+
+## Bước 3
+
+Lưu bản đồ:
+
+```bash
+ros2 service call /write_state cartographer_ros_msgs/srv/WriteState \
+"{filename: '/home/nhom3/delivery_robot_ws/src/delivery_robot_navigation/maps/map_final.pbstream'}"
+```
+
+Map sẽ được lưu với tên:
+
+```text
+map_final.pbstream
+```
